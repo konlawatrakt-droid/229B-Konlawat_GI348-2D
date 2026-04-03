@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Door : MonoBehaviour
 {
@@ -10,12 +10,20 @@ public class Door : MonoBehaviour
 
         if (inv != null && inv.keyCount >= requiredKeys)
         {
-            Debug.Log("�Դ��е�!");
+            Debug.Log("เปิดประตู!");
             gameObject.SetActive(false);
         }
         else
         {
-            Debug.Log("�ح�����!");
+            Debug.Log("กุญแจไม่พอ!");
+        }
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            TryOpen(other.gameObject);
         }
     }
 }

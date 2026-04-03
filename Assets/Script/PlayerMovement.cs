@@ -4,7 +4,7 @@ public class PlayerMovement : MonoBehaviour
 {
     public float speed = 6f;
     public float gravity = -9.8f;
-    public float jumpHeight = 2f; // ความสูงการกระโดด
+    public float jumpHeight = 2f;
     public Transform cameraTransform;
 
     CharacterController controller;
@@ -17,10 +17,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // ✅ เช็คว่าติดพื้นไหม
+        // เช็คพื้น
         if (controller.isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // กันไม่ให้ลอย
+            velocity.y = -2f;
         }
 
         float horizontal = Input.GetAxis("Horizontal");
@@ -36,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
 
         controller.Move(move * speed * Time.deltaTime);
 
-        // ✅ กระโดด (กด Space)
+        // กระโดด
         if (Input.GetButtonDown("Jump") && controller.isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
@@ -44,7 +44,12 @@ public class PlayerMovement : MonoBehaviour
 
         // gravity
         velocity.y += gravity * Time.deltaTime;
-
         controller.Move(velocity * Time.deltaTime);
+    }
+
+   
+    public void ResetVelocity()
+    {
+        velocity = Vector3.zero;
     }
 }
