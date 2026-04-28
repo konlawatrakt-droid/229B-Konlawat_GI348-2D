@@ -5,17 +5,25 @@ public class Patrol : MonoBehaviour
 {
     public Transform pointA;
     public Transform pointB;
-
+    public Transform model;
+    public Transform player;
     public float speed = 3f;
     public float waitTime = 1f;
 
+    public GameObject bulletPrefab;
+    public Transform firePoint;
+    public float fireRate = 1f;
+
+    private float nextFireTime;
     private Transform target;
 
     void Start()
     {
+        detection = GetComponent<EnemyDetection>();
         target = pointA;
         StartCoroutine(MoveLoop());
     }
+
 
     IEnumerator MoveLoop()
     {
@@ -39,4 +47,35 @@ public class Patrol : MonoBehaviour
             target = (target == pointA) ? pointB : pointA;
         }
     }
+    private void FixedUpdate()
+    {
+        Vector3 dir = (target.position - transform.position).normalized;
+        dir.y = 0;
+
+        if (dir != Vector3.zero)
+        {
+            model.rotation = Quaternion.LookRotation(dir);
+        }
+    }
+    private EnemyDetection detection;
+
+
+    void Shoot()
+    {
+        if (Time.time < nextFireTime) return;
+
+        nextFireTime = Time.time + 1f / fireRate;
+
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        Vector3 dir = (player.position - firePoint.position).normalized;
+
+        bullet.GetComponent<Bullet>().Shoot(dir);
+    }
+
+    void Update()
+    {
+        if (detection.CanSeePlayer()) { Shoot(); }
+    }
 }
+
