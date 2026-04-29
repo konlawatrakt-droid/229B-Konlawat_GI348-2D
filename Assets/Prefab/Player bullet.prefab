@@ -250,5 +250,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerBullet
   speed: 30
-  lifeTime: 3
+  lifeTime: 0.5
   damage: 10

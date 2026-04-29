@@ -5,14 +5,18 @@ public class PlayerShooting : MonoBehaviour
 {
     public GameObject bulletPrefab;
     public Transform firePoint;
-    public int maxAmmo = 30;
+    public int maxAmmo = 120;
     public int currentAmmo;
 
     [Header("Firing Settings")]
-    public float fireRate = 5f; // ยิงได้กี่นัดต่อวินาที (เช่น 5 นัด/วินาที)
+    public float fireRate = 5f;
     private float nextFireTime = 0f;
 
     public Text ammoText;
+
+    [Header("Audio")]
+    public AudioSource shootSource;
+    public AudioClip shootSound;
 
     void Start()
     {
@@ -22,13 +26,11 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
-        // เปลี่ยนจาก GetButton เป็น GetButtonDown ถ้าอยากให้กดหนึ่งครั้งยิงหนึ่งนัด
-        // หรือใช้ GetButton ค้างไว้แต่ต้องเช็ค Time.time ให้แม่นยำ
         if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
         {
             if (currentAmmo > 0)
             {
-                nextFireTime = Time.time + (1f / fireRate); // 🔥 คำนวณเวลานัดถัดไปก่อนยิง
+                nextFireTime = Time.time + (1f / fireRate);
                 Shoot();
             }
         }
@@ -39,9 +41,13 @@ public class PlayerShooting : MonoBehaviour
         currentAmmo--;
         UpdateAmmoUI();
 
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        // 🔥 เพิ่มการเล่นเสียงที่นี่
+        if (shootSource != null && shootSound != null)
+        {
+            shootSource.PlayOneShot(shootSound);
+        }
 
-        // ✅ ใช้ทิศหน้าของ firePoint โดยตรง ไม่ยุ่งกับกล้องเลย
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Vector3 shootDir = firePoint.forward;
 
         PlayerBullet pBullet = bullet.GetComponent<PlayerBullet>();
