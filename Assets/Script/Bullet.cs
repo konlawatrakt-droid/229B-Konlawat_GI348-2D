@@ -17,10 +17,16 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+    
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            return;
+        }
+
+
         if (collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("โดนผู้เล่น!");
-            // ใส่ damage ตรงนี้
         }
 
         Destroy(gameObject);

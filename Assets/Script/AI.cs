@@ -9,7 +9,7 @@ public class Patrol : MonoBehaviour
     public Transform player;
     public float speed = 3f;
     public float waitTime = 1f;
-
+    private EnemyDetection detection;
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float fireRate = 1f;
@@ -57,7 +57,6 @@ public class Patrol : MonoBehaviour
             model.rotation = Quaternion.LookRotation(dir);
         }
     }
-    private EnemyDetection detection;
 
 
     void Shoot()

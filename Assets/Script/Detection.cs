@@ -12,19 +12,26 @@ public class EnemyDetection : MonoBehaviour
     // ลบ Update() เก่าทิ้ง แล้วใช้ฟังก์ชันนี้แทน
     public bool CanSeePlayer()
     {
-        if (!playerInRange) return false; // เช็ค trigger ก่อน
+        if (!playerInRange)
+        {
+            // ถ้าบรรทัดนี้ขึ้น แสดงว่า Trigger ไม่ทำงาน หรือยังไม่เดินเข้าระยะ
+            // Debug.Log("ผู้เล่นยังไม่อยู่ในระยะ Trigger"); 
+            return false;
+        }
 
-        Vector3 dir = (player.position - transform.position).normalized;
-        float angle = Vector3.Angle(transform.forward, dir);
+        Vector3 dirToPlayer = (player.position - transform.position).normalized;
+        float angle = Vector3.Angle(transform.forward, dirToPlayer);
 
         if (angle < viewAngle / 2f)
         {
-            if (Physics.Raycast(transform.position, dir, out RaycastHit hit, viewDistance, ~obstacleMask))
+            if (Physics.Raycast(transform.position, dirToPlayer, out RaycastHit hit, viewDistance, obstacleMask))
             {
-                return hit.transform == player;
+                // ดูว่า Raycast ไปชนกับ Object ชื่ออะไร
+                Debug.Log("Raycast ชนกับ: " + hit.transform.name);
+
+                if (hit.transform == player) return true;
             }
         }
-
         return false;
     }
 
