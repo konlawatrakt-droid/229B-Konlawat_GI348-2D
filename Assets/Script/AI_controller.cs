@@ -50,15 +50,15 @@ public class AIController : MonoBehaviour
 
     void Update()
     {
+        if (fov == null) return; // 🔥 ป้องกัน Error ถ้า FOV ถูกทำลายไปแล้ว
+
         if (fov.visibleTarget != null)
         {
-            // ถ้าเจอผู้เล่น: หยุดเดิน และโจมตี
             isPatrolling = false;
             AttackTarget(fov.visibleTarget);
         }
         else
         {
-            // ถ้าไม่เจอ: กลับไปเดินลาดตระเวน
             isPatrolling = true;
         }
     }

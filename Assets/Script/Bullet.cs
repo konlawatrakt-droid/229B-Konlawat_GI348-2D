@@ -18,17 +18,17 @@ public class Bullet : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        // เช็คว่าชนโดน Object ที่มี Tag ว่า "Player" หรือไม่
+        // ถ้าชนผู้เล่น
         if (collision.gameObject.CompareTag("Player"))
         {
-            // ดึงสคริปต์ PlayerHP จากตัวผู้เล่นที่ถูกชน
-            PlayerHP playerHealth = collision.gameObject.GetComponent<PlayerHP>();
-
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage(damage); // 👈 ส่งค่าความเสียหายไปลด HP
-                Debug.Log("ผู้เล่นโดนยิง! ลดเลือดไป: " + damage);
-            }
+            PlayerHP hp = collision.gameObject.GetComponent<PlayerHP>();
+            if (hp != null) hp.TakeDamage(10f);
+        }
+        // ถ้าชนศัตรู
+        else if (collision.gameObject.CompareTag("Enemy"))
+        {
+            EnemyHP enemyHp = collision.gameObject.GetComponent<EnemyHP>();
+            if (enemyHp != null) enemyHp.TakeDamage(20f);
         }
 
         Destroy(gameObject);

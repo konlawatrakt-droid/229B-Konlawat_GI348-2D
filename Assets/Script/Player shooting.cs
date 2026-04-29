@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI; // สำหรับแสดงจำนวนกระสุนบน UI
+using UnityEngine.UI;
 
 public class PlayerShooting : MonoBehaviour
 {
@@ -7,8 +7,12 @@ public class PlayerShooting : MonoBehaviour
     public Transform firePoint;
     public int maxAmmo = 30;
     public int currentAmmo;
-    
-    public Text ammoText; // ลาก UI Text มาใส่เพื่อดูจำนวนกระสุน
+
+    [Header("Firing Settings")]
+    public float fireRate = 5f; // ยิงได้กี่นัดต่อวินาที (เช่น 5 นัด/วินาที)
+    private float nextFireTime = 0f;
+
+    public Text ammoText;
 
     void Start()
     {
@@ -18,15 +22,14 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Fire1")) // คลิกซ้ายเพื่อยิง
+        // เปลี่ยนจาก GetButton เป็น GetButtonDown ถ้าอยากให้กดหนึ่งครั้งยิงหนึ่งนัด
+        // หรือใช้ GetButton ค้างไว้แต่ต้องเช็ค Time.time ให้แม่นยำ
+        if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
         {
             if (currentAmmo > 0)
             {
+                nextFireTime = Time.time + (1f / fireRate); // 🔥 คำนวณเวลานัดถัดไปก่อนยิง
                 Shoot();
-            }
-            else
-            {
-                Debug.Log("กระสุนหมด!");
             }
         }
     }
@@ -37,9 +40,15 @@ public class PlayerShooting : MonoBehaviour
         UpdateAmmoUI();
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        
-        // ยิงไปข้างหน้าตามทิศทางของกล้องหรือตัวผู้เล่น
-        bullet.GetComponent<Bullet>().Shoot(firePoint.forward);
+
+        // ✅ ใช้ทิศหน้าของ firePoint โดยตรง ไม่ยุ่งกับกล้องเลย
+        Vector3 shootDir = firePoint.forward;
+
+        PlayerBullet pBullet = bullet.GetComponent<PlayerBullet>();
+        if (pBullet != null)
+        {
+            pBullet.Shoot(shootDir, gameObject);
+        }
     }
 
     public void AddAmmo(int amount)

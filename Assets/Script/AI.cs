@@ -61,15 +61,21 @@ public class Patrol : MonoBehaviour
 
     void Shoot()
     {
-        if (Time.time < nextFireTime) return;
-
-        nextFireTime = Time.time + 1f / fireRate;
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
 
-        Vector3 dir = (player.position - firePoint.position).normalized;
+        // คำนวณทิศทาง
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Vector3 targetPoint = ray.GetPoint(100);
+        if (Physics.Raycast(ray, out RaycastHit hit)) targetPoint = hit.point;
+        Vector3 shootDir = (targetPoint - firePoint.position).normalized;
 
-        bullet.GetComponent<Bullet>().Shoot(dir);
+        // เรียกใช้สคริปต์ PlayerBullet และส่งค่าผู้เล่น (this.gameObject) เข้าไป
+        PlayerBullet pBullet = bullet.GetComponent<PlayerBullet>();
+        if (pBullet != null)
+        {
+            pBullet.Shoot(shootDir, gameObject);
+        }
     }
 
     void Update()

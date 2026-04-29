@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // เช็คพื้น
+        float cameraY = Camera.main.transform.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(0, cameraY, 0);
         if (controller.isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
