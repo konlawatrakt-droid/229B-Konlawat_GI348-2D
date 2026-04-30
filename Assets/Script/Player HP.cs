@@ -6,7 +6,7 @@ public class PlayerHP : MonoBehaviour
     public float maxHP = 100f;
     public float currentHP;
 
-    public Slider hpBar; // 🔥 ลาก UI มาใส่
+    public Slider hpBar;
 
     private PlayerRespawn respawn;
 
@@ -22,8 +22,7 @@ public class PlayerHP : MonoBehaviour
     public void TakeDamage(float dmg)
     {
         currentHP -= dmg;
-
-        hpBar.value = currentHP; // 🔥 อัปเดตหลอดเลือด
+        hpBar.value = currentHP;
 
         if (currentHP <= 0)
         {
@@ -34,22 +33,22 @@ public class PlayerHP : MonoBehaviour
     public void Heal(float amount)
     {
         currentHP += amount;
-
-        if (currentHP > maxHP)
-            currentHP = maxHP;
-
-        // อัปเดต UI
-        if (hpBar != null)
-            hpBar.value = currentHP;
+        if (currentHP > maxHP) currentHP = maxHP;
+        if (hpBar != null) hpBar.value = currentHP;
     }
 
-
+    // ✅ เพิ่มตรงนี้ — PlayerRespawn จะเรียกตอน Respawn
+    public void ResetHP()
+    {
+        currentHP = maxHP;
+        if (hpBar != null) hpBar.value = currentHP;
+        Debug.Log("HP Reset to full!");
+    }
 
     void Die()
     {
         currentHP = maxHP;
-        hpBar.value = currentHP; // 🔥 รีหลอด
-
+        hpBar.value = currentHP;
         respawn.Respawn();
     }
 }

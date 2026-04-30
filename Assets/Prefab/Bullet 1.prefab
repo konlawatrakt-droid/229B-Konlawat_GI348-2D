@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -6122311725775582634}
   - component: {fileID: -1805500883527992972}
   m_Layer: 9
-  m_Name: Bullet
+  m_Name: Bullet 1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -155,9 +155,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ddf7039b32d81f4b9ee6f38d5b3ae9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bullet
-  speed: 15
+  speed: 75
   lifeTime: 3
-  damage: 10
+  damage: 20
 --- !u!108 &-6122311725775582634
 Light:
   m_ObjectHideFlags: 0

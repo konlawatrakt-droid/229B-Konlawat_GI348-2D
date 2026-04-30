@@ -16,6 +16,21 @@ public class Bullet : MonoBehaviour
         GetComponent<Rigidbody>().linearVelocity = direction * speed;
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("ForceField"))
+        {
+            // ถ้าชนโล่ ให้กระสุนหายไปเฉยๆ ไม่ต้องลดเลือดผู้เล่น
+            Destroy(gameObject);
+            return;
+        }
+        if (other.CompareTag("Player"))
+        {
+            // ลดเลือดผู้เล่น
+        }
+    }
+
+
     void OnCollisionEnter(Collision collision)
     {
         // ถ้าชนผู้เล่น
