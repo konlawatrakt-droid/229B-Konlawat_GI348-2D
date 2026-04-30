@@ -13,6 +13,10 @@ public class AIController : MonoBehaviour
     public Transform firePoint;
     public float fireRate = 1f;
 
+    [Header("Audio")]
+    public AudioSource enemyAudioSource; // ลาก AudioSource ของศัตรูมาใส่
+    public AudioClip shootSound;        // ลากไฟล์เสียงยิงมาใส่
+
     private FieldOfView fov;
     private Transform currentTarget;
     private float nextFireTime;
@@ -22,6 +26,11 @@ public class AIController : MonoBehaviour
     {
         fov = GetComponent<FieldOfView>();
         currentTarget = pointA;
+
+        // ถ้าลืมลาก AudioSource ใน Inspector ให้มันหาเองในเบื้องต้น
+        if (enemyAudioSource == null)
+            enemyAudioSource = GetComponent<AudioSource>();
+
         StartCoroutine(PatrolRoutine());
     }
 
@@ -31,7 +40,6 @@ public class AIController : MonoBehaviour
         {
             if (isPatrolling)
             {
-                // เดินไปยังเป้าหมาย Patrol
                 while (Vector3.Distance(transform.position, currentTarget.position) > 0.3f && isPatrolling)
                 {
                     MoveTo(currentTarget.position);
@@ -50,7 +58,7 @@ public class AIController : MonoBehaviour
 
     void Update()
     {
-        if (fov == null) return; // 🔥 ป้องกัน Error ถ้า FOV ถูกทำลายไปแล้ว
+        if (fov == null) return;
 
         if (fov.visibleTarget != null)
         {
@@ -76,12 +84,10 @@ public class AIController : MonoBehaviour
 
     void AttackTarget(Transform target)
     {
-        // หันหน้าไปหาผู้เล่น
         Vector3 dir = (target.position - transform.position).normalized;
         dir.y = 0;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10f);
 
-        // ยิงตามอัตราที่กำหนด
         if (Time.time >= nextFireTime)
         {
             Shoot(target.position);
@@ -91,11 +97,18 @@ public class AIController : MonoBehaviour
 
     void Shoot(Vector3 targetPos)
     {
-        Debug.Log("กำลังจะยิง!"); // ถ้าบรรทัดนี้ขึ้นใน Console แสดงว่า Logic AI ถูกต้องแล้ว
         if (bulletPrefab && firePoint)
         {
             GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-            Debug.Log("สร้างกระสุนสำเร็จ");
+
+            // --- ส่วนที่เพิ่ม: เล่นเสียงยิง ---
+            if (enemyAudioSource != null && shootSound != null)
+            {
+                // สุ่ม Pitch เล็กน้อยเพื่อให้เสียงไม่น่าเบื่อ
+                enemyAudioSource.pitch = Random.Range(0.9f, 1.1f);
+                enemyAudioSource.PlayOneShot(shootSound);
+            }
+            // ---------------------------
 
             Vector3 shootDir = (targetPos - firePoint.position).normalized;
             bullet.GetComponent<Bullet>().Shoot(shootDir);

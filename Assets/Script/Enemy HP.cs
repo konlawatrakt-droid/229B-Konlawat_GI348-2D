@@ -4,8 +4,12 @@ public class EnemyHP : MonoBehaviour
 {
     [Header("Enemy Settings")]
     public string enemyID;
-    public bool isBoss = false; // 👈 เพิ่มส่วนนี้กลับมาตามที่คุณต้องการ
+    public bool isBoss = false;
     public float maxHP = 50f;
+
+    [Header("Audio Settings")]
+    public AudioSource enemyAudioSource;
+    public AudioClip hitSound;
 
     private float currentHP;
     private Vector3 startPos;
@@ -17,16 +21,20 @@ public class EnemyHP : MonoBehaviour
         startPos = transform.position;
         startRot = transform.rotation;
 
-        if (string.IsNullOrEmpty(enemyID))
-        {
-            Debug.LogError(gameObject.name + " ลืมใส่ Enemy ID ใน Inspector!");
-        }
+        if (enemyAudioSource == null)
+            enemyAudioSource = GetComponent<AudioSource>();
     }
 
     public void TakeDamage(float amount)
     {
         currentHP -= amount;
-        Debug.Log(enemyID + " โดนโจมตี! เลือดเหลือ: " + currentHP);
+
+        if (enemyAudioSource != null && hitSound != null)
+        {
+            enemyAudioSource.pitch = Random.Range(0.85f, 1.15f);
+            enemyAudioSource.PlayOneShot(hitSound);
+        }
+
         if (currentHP <= 0) Die();
     }
 
@@ -34,7 +42,6 @@ public class EnemyHP : MonoBehaviour
     {
         if (EnemySaveManager.instance != null)
         {
-            // 🔥 ตรรกะพิเศษ: ถ้าเป็นบอส ให้บันทึกว่าตายถาวร (Permanent) ทันที
             if (isBoss)
             {
                 if (!EnemySaveManager.instance.permanentDeadIDs.Contains(enemyID))
@@ -44,11 +51,9 @@ public class EnemyHP : MonoBehaviour
             }
             else
             {
-                // ถ้าเป็นศัตรูทั่วไป ให้บันทึกแค่ตายชั่วคราว
                 EnemySaveManager.instance.MarkAsDead(enemyID);
             }
         }
-
         gameObject.SetActive(false);
     }
 
@@ -56,7 +61,6 @@ public class EnemyHP : MonoBehaviour
     {
         if (EnemySaveManager.instance != null)
         {
-            // ถ้าไม่อยู่ในบัญชีตายถาวร ให้กลับมาเกิดใหม่
             if (!EnemySaveManager.instance.permanentDeadIDs.Contains(enemyID))
             {
                 gameObject.SetActive(true);
@@ -65,10 +69,5 @@ public class EnemyHP : MonoBehaviour
                 transform.rotation = startRot;
             }
         }
-    }
-
-    public void ResetHP()
-    {
-        currentHP = maxHP;
     }
 }

@@ -8,6 +8,12 @@ public class PlayerHP : MonoBehaviour
 
     public Slider hpBar;
 
+    // ✅ เพิ่มตรงนี้
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip hurtSound;  // เสียงตอนโดนตี
+    public AudioClip dieSound;   // เสียงตอนตาย (optional)
+
     private PlayerRespawn respawn;
 
     void Start()
@@ -24,6 +30,10 @@ public class PlayerHP : MonoBehaviour
         currentHP -= dmg;
         hpBar.value = currentHP;
 
+        // ✅ เล่นเสียงเจ็บ
+        if (audioSource != null && hurtSound != null)
+            audioSource.PlayOneShot(hurtSound);
+
         if (currentHP <= 0)
         {
             Die();
@@ -37,7 +47,6 @@ public class PlayerHP : MonoBehaviour
         if (hpBar != null) hpBar.value = currentHP;
     }
 
-    // ✅ เพิ่มตรงนี้ — PlayerRespawn จะเรียกตอน Respawn
     public void ResetHP()
     {
         currentHP = maxHP;
@@ -47,6 +56,10 @@ public class PlayerHP : MonoBehaviour
 
     void Die()
     {
+        // ✅ เล่นเสียงตาย
+        if (audioSource != null && dieSound != null)
+            audioSource.PlayOneShot(dieSound);
+
         currentHP = maxHP;
         hpBar.value = currentHP;
         respawn.Respawn();
