@@ -8,11 +8,14 @@ public class PlayerHP : MonoBehaviour
 
     public Slider hpBar;
 
-    // ✅ เพิ่มตรงนี้
     [Header("Audio")]
     public AudioSource audioSource;
-    public AudioClip hurtSound;  // เสียงตอนโดนตี
-    public AudioClip dieSound;   // เสียงตอนตาย (optional)
+    public AudioClip hurtSound;
+    public AudioClip dieSound;
+
+    [Header("Sound Cooldown")]
+    public float hurtSoundCooldown = 0.5f; // เล่นเสียงซ้ำได้ทุกกี่วินาที
+    private float lastHurtSoundTime = -999f; // ✅ ตั้งให้เล่นได้ทันทีตอนแรก
 
     private PlayerRespawn respawn;
 
@@ -23,6 +26,12 @@ public class PlayerHP : MonoBehaviour
 
         hpBar.maxValue = maxHP;
         hpBar.value = currentHP;
+
+        Time.timeScale = 1f; // รีเซ็ตเวลาทุกครั้งที่เริ่มซีนใหม่
+
+        // ถ้าอยากให้เมาส์หายไปตอนเริ่มเล่นเกมด้วย
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     public void TakeDamage(float dmg)
@@ -30,9 +39,15 @@ public class PlayerHP : MonoBehaviour
         currentHP -= dmg;
         hpBar.value = currentHP;
 
-        // ✅ เล่นเสียงเจ็บ
+        // ✅ เช็ค Cooldown ก่อนเล่นเสียง
         if (audioSource != null && hurtSound != null)
-            audioSource.PlayOneShot(hurtSound);
+        {
+            if (Time.time >= lastHurtSoundTime + hurtSoundCooldown)
+            {
+                audioSource.PlayOneShot(hurtSound);
+                lastHurtSoundTime = Time.time;
+            }
+        }
 
         if (currentHP <= 0)
         {
@@ -51,12 +66,12 @@ public class PlayerHP : MonoBehaviour
     {
         currentHP = maxHP;
         if (hpBar != null) hpBar.value = currentHP;
+        lastHurtSoundTime = -999f; // ✅ Reset cooldown ด้วยตอน Respawn
         Debug.Log("HP Reset to full!");
     }
 
     void Die()
     {
-        // ✅ เล่นเสียงตาย
         if (audioSource != null && dieSound != null)
             audioSource.PlayOneShot(dieSound);
 
